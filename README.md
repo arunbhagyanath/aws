@@ -408,8 +408,6 @@ The resource only handles manipulating the EBS volume, additional resources need
 
 #### Examples:
 
-Create a 50G volume, attach it to the instance as `/dev/sdi`:
-
 ```ruby
 aws_ebs_volume 'db_ebs_volume' do
   size 50
@@ -418,7 +416,7 @@ aws_ebs_volume 'db_ebs_volume' do
 end
 ```
 
-Create a new 50G volume from the snapshot ID provided and attach it as `/dev/sdi`.
+This will create a 50G volume, attach it to the instance as `/dev/sdi`.
 
 ```ruby
 aws_ebs_volume 'db_ebs_volume_from_snapshot' do
@@ -428,6 +426,8 @@ aws_ebs_volume 'db_ebs_volume_from_snapshot' do
   action [:create, :attach]
 end
 ```
+
+This will create a new 50G volume from the snapshot ID provided and attach it as `/dev/sdi`.
 
 ### aws_elastic_ip
 
