@@ -23,6 +23,7 @@ Metrics/ParameterLists:
 Style/EndOfLine:
   Exclude:
     - 'libraries/matchers.rb'
+    - 'metadata.rb'
 
 # Configuration parameters: MinBodyLength.
 Style/GuardClause:
