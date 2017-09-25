@@ -7,7 +7,6 @@ def whyrun_supported?
 end
 
 action :update do
-  Chef::Log.debug("The current tags on the node are #{@current_resource.tags}")
   resource_id = @new_resource.resource_id || @new_resource.name
 
   updated_tags = @current_resource.tags.merge(@new_resource.tags)
@@ -16,6 +15,7 @@ action :update do
   else
     # tags that begin with "aws" are reserved
     converge_by("Updating the following tags for resource #{resource_id} (skipping AWS tags): " + updated_tags.inspect) do
+      Chef::Log.info("AWS: Updating the following tags for resource #{resource_id} (skipping AWS tags): " + updated_tags.inspect)
       updated_tags.delete_if { |key, _value| key.to_s =~ /^aws/ }
       ec2.create_tags(resources: [resource_id], tags: updated_tags.collect { |k, v| { key: k, value: v } })
     end
@@ -23,7 +23,6 @@ action :update do
 end
 
 action :add do
-  Chef::Log.debug("The current tags on the node are #{@current_resource.tags}")
   resource_id = @new_resource.resource_id || @new_resource.name
 
   @new_resource.tags.each do |k, v|
@@ -32,13 +31,13 @@ action :add do
     else
       converge_by("add tag '#{k}' with value '#{v}' on resource #{resource_id}") do
         ec2.create_tags(resources: [resource_id], tags: [{ key: k, value: v }])
+        Chef::Log.info("AWS: Added tag '#{k}' with value '#{v}' on resource #{resource_id}")
       end
     end
   end
 end
 
 action :remove do
-  Chef::Log.debug("The current tags on the node are #{@current_resource.tags}")
   resource_id = @new_resource.resource_id || @new_resource.name
 
   # iterate over the tags specified for deletion
@@ -55,12 +54,11 @@ action :remove do
 end
 
 action :force_remove do
-  Chef::Log.debug("The current tags on the node are #{@current_resource.tags}")
   resource_id = @new_resource.resource_id || @new_resource.name
 
   @new_resource.tags.keys do |key|
     if @current_resource.tags.keys.include?(key)
-      converge_by("delete tag '#{key}' on resource #{resource_id} with value '#{@current_resource.tags[key]}'") do
+      converge_by("AWS: Deleted tag '#{key}' on resource #{resource_id} with value '#{@current_resource.tags[key]}'") do
         ec2.delete_tags(resources: [resource_id], tags: [{ key: key }])
       end
     else
