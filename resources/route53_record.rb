@@ -23,7 +23,7 @@ property :aws_secret_access_key, String
 property :aws_session_token,     String
 property :aws_assume_role_arn,   String
 property :aws_role_session_name, String
-property :region,                String, default: lazy { fallback_region }
+property :region,                String, default: lazy { aws_region }
 
 include AwsCookbook::Ec2 # needed for aws_region helper
 
@@ -53,7 +53,7 @@ action :delete do
       resource_records: [{ value: '192.168.1.2' }],
     }
 
-    route53_client.stub_responses(
+    route53.stub_responses(
       :list_resource_record_sets,
       resource_record_sets: [mock_resource_record_set],
       is_truncated: false,
@@ -70,8 +70,6 @@ action :delete do
 end
 
 action_class do
-  include AwsCookbook::Ec2
-
   def name
     @name ||= begin
       return new_resource.name + '.' if new_resource.name !~ /\.$/
@@ -139,11 +137,23 @@ action_class do
     @fail_on_error ||= new_resource.fail_on_error
   end
 
-  def route53_client
+  def route53
     @route53 ||= begin
       require 'aws-sdk'
-      Chef::Log.debug('Initializing Aws::Route53::Client')
-      create_aws_interface(::Aws::Route53::Client, region: new_resource.region, mock: new_resource.mock)
+      if mock?
+        @route53 = Aws::Route53::Client.new(stub_responses: true)
+      elsif new_resource.aws_access_key && new_resource.aws_secret_access_key
+        credentials = Aws::Credentials.new(new_resource.aws_access_key, new_resource.aws_secret_access_key)
+        @route53 = Aws::Route53::Client.new(
+          credentials: credentials,
+          region: new_resource.region
+        )
+      else
+        Chef::Log.info 'No AWS credentials supplied, going to attempt to use automatic credentials from IAM or ENV'
+        @route53 = Aws::Route53::Client.new(
+          region: new_resource.region
+        )
+      end
     end
   end
 
@@ -168,7 +178,7 @@ action_class do
 
   def current_resource_record_set
     # List all the resource records for this zone:
-    lrrs = route53_client
+    lrrs = route53
            .list_resource_record_sets(
              hosted_zone_id: "/hostedzone/#{zone_id}",
              start_record_name: name
@@ -209,7 +219,7 @@ action_class do
       },
     }
     converge_by("#{action} record #{new_resource.name} ") do
-      response = route53_client.change_resource_record_sets(request)
+      response = route53.change_resource_record_sets(request)
       Chef::Log.debug "Changed record - #{action}: #{response.inspect}"
     end
   rescue Aws::Route53::Errors::ServiceError => e
