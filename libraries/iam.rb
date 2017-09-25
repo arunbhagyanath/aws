@@ -6,7 +6,7 @@ module Opscode
       include Opscode::Aws::Ec2
 
       def iam
-        require 'aws-sdk'
+        require_aws_sdk
 
         Chef::Log.debug('Initializing the IAM Client')
         @iam ||= create_aws_interface(::Aws::IAM::Client)

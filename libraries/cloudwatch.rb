@@ -5,7 +5,7 @@ module Opscode
     module CloudWatch
       include Opscode::Aws::Ec2
       def cwh
-        require 'aws-sdk'
+        require_aws_sdk
         Chef::Log.debug('Initializing the CloudWatch Client')
         @cwh ||= create_aws_interface(::Aws::CloudWatch::Client)
       end

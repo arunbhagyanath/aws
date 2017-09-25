@@ -12,6 +12,4 @@ end
 
 source_url 'https://github.com/chef-cookbooks/aws'
 issues_url 'https://github.com/chef-cookbooks/aws/issues'
-chef_version '>= 12.9' if respond_to?(:chef_version)
-
-gem 'aws-sdk'
+chef_version '>= 12.6' if respond_to?(:chef_version)

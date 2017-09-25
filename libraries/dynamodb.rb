@@ -6,7 +6,7 @@ module Opscode
       include Opscode::Aws::Ec2
 
       def dynamodb
-        require 'aws-sdk'
+        require_aws_sdk
 
         Chef::Log.debug('Initializing the DynamoDB Client')
         @dynamodb ||= create_aws_interface(::Aws::DynamoDB::Client)
