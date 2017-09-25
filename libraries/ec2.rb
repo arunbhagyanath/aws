@@ -62,6 +62,8 @@ module AwsCookbook
       end
     end
 
+    private
+
     # setup AWS instance using passed creds, iam profile, or assumed role
     def create_aws_interface(aws_interface, **opts)
       aws_interface_opts = { region: opts[:region] }
