@@ -2,10 +2,6 @@
 
 This file is used to list changes made in each version of the aws cookbook.
 
-## 7.2.1 (2017-09-08)
-
-- Add missing aws_instance_term_protection matcher. Rename kinetic to kinesis matcher.
-
 ## 7.2.0 (2017-09-06)
 
 - Add instance_term_protection resource
