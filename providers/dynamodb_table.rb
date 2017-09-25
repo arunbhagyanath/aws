@@ -1,4 +1,4 @@
-include AwsCookbook::DynamoDB
+include Opscode::Aws::DynamoDB
 
 use_inline_resources
 

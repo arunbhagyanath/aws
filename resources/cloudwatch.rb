@@ -68,13 +68,7 @@ action :enable_action do
 end
 
 action_class do
-  include AwsCookbook::Ec2
-
-  def cwh
-    require 'aws-sdk'
-    Chef::Log.debug('Initializing the CloudWatch Client')
-    @cwh ||= create_aws_interface(::Aws::CloudWatch::Client)
-  end
+  include Opscode::Aws::CloudWatch
 
   # Make options for cloudwatch API
   def build_cwh_options

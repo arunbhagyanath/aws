@@ -2,14 +2,13 @@ require File.join(File.dirname(__FILE__), 'ec2')
 
 module Opscode
   module Aws
-    module Kinesis
+    module CloudWatch
       include Opscode::Aws::Ec2
 
-      def kinesis
+      def cwh
         require 'aws-sdk'
-
-        Chef::Log.debug('Initializing the Kinesis Client')
-        @kinesis ||= create_aws_interface(::Aws::Kinesis::Client)
+        Chef::Log.debug('Initializing the CloudWatch Client')
+        @cwh ||= create_aws_interface(::Aws::CloudWatch::Client)
       end
     end
   end
