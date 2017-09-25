@@ -2,12 +2,12 @@ include AwsCookbook::Ec2
 
 use_inline_resources
 
-def whyrun_supported?
-  true
-end
-
 action :add do
-  resource_id = @new_resource.resource_id || @new_resource.name
+  resource_id = if @new_resource.resource_id
+                  @new_resource.resource_id
+                else
+                  @new_resource.name
+                end
 
   @new_resource.tags.each do |k, v|
     if @current_resource.tags.keys.include?(k)
@@ -22,7 +22,11 @@ action :add do
 end
 
 action :update do
-  resource_id = resource_id = @new_resource.resource_id || @new_resource.name
+  resource_id = if @new_resource.resource_id
+                  @new_resource.resource_id
+                else
+                  @new_resource.name
+                end
 
   updated_tags = @current_resource.tags.merge(@new_resource.tags)
   if updated_tags.eql?(@current_resource.tags)
@@ -38,7 +42,11 @@ action :update do
 end
 
 action :remove do
-  resource_id = resource_id = @new_resource.resource_id || @new_resource.name
+  resource_id = if @new_resource.resource_id
+                  @new_resource.resource_id
+                else
+                  @new_resource.name
+                end
 
   tags_to_delete = @new_resource.tags.keys
 
@@ -52,7 +60,11 @@ action :remove do
 end
 
 action :force_remove do
-  resource_id = resource_id = @new_resource.resource_id || @new_resource.name
+  resource_id = if @new_resource.resource_id
+                  @new_resource.resource_id
+                else
+                  @new_resource.name
+                end
 
   @new_resource.tags.keys do |key|
     if @current_resource.tags.keys.include?(key)
