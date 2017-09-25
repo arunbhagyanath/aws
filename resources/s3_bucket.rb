@@ -1,3 +1,4 @@
+property :name, String, name_property: true
 property :region, String, default: lazy { fallback_region }
 property :delete_all_objects, [true, false], default: false
 property :versioning, [true, false], default: false, desired_state: false
