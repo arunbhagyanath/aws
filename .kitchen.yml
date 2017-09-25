@@ -123,9 +123,9 @@ suites:
         key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
         access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
 
-  - name: route53
+  - name: route53_record
     run_list:
-    - recipe[aws_test::route53]
+    - recipe[aws_test::route53_record]
     attributes:
       aws_test:
         key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
