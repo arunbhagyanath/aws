@@ -52,12 +52,12 @@ end
 action_class do
   include AwsCookbook::Ec2
 
-  def eip_info(ip)
+  def address(ip)
     ec2.describe_addresses(public_ips: [ip]).addresses[0]
   end
 
   def attach(ip, timeout)
-    addr = eip_info(ip)
+    addr = address(ip)
     if addr[:domain] == 'vpc'
       ec2.associate_address(instance_id: instance_id, allocation_id: addr[:allocation_id])
     else
@@ -68,7 +68,7 @@ action_class do
     begin
       Timeout.timeout(timeout) do
         loop do
-          addr = eip_info(ip)
+          addr = address(ip)
           if addr.nil?
             raise 'Elastic IP has been deleted while waiting for attachment'
           elsif addr[:instance_id] == instance_id
@@ -86,7 +86,7 @@ action_class do
   end
 
   def detach(ip, timeout)
-    addr = eip_info(ip)
+    addr = address(ip)
     if ip[:domain] == 'vpc'
       ec2.disassociate_address(allocation_ip: addr[:allocation_id])
     else
@@ -97,7 +97,7 @@ action_class do
     begin
       Timeout.timeout(timeout) do
         loop do
-          addr = eip_info(ip)
+          addr = address(ip)
           if addr.nil?
             Chef::Log.debug('Elastic IP has been deleted while waiting for detachment')
           elsif addr[:instance_id] != instance_id
