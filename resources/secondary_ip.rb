@@ -20,12 +20,11 @@ action :assign do
   if assigned_addresses.include? ip
     Chef::Log.debug("secondary ip (#{ip}) is already attached to the #{interface}")
   else
-    converge_by("assign secondary #{ip} to #{interface}") do
+    converge_by("assign secondary ip to #{interface}") do
       assign(eni, ip)
 
       begin
         Timeout.timeout(new_resource.timeout) do
-          # if the IP isn't there then sleep, reload ohai data and check again
           until interface_private_ips(new_resource.interface).include?(new_resource.ip)
             sleep 4
 
@@ -52,7 +51,7 @@ action :unassign do
   assigned_addresses = interface_private_ips(new_resource.interface)
 
   if assigned_addresses.include?(ip)
-    converge_by("unassign secondary #{ip} from #{new_resource.interface}") do
+    converge_by("unassign secondary ip frome #{new_resource.interface}") do
       unassign(eni, ip)
       begin
         Timeout.timeout(new_resource.timeout) do
@@ -107,7 +106,6 @@ action_class do
     end.keys.first.downcase
   end
 
-  # return an array of all private IPs on an interface
   def interface_private_ips(interface)
     mac = interface_mac_address(interface)
     ips = node['ec2']['network_interfaces_macs'][mac]['local_ipv4s']
@@ -116,10 +114,10 @@ action_class do
     ips
   end
 
-  # return the interface ID given an interface
+  # fetch the network interface ID of an interface from the metadata endpoint
   def interface_eni_id(interface)
     mac = interface_mac_address(interface)
-    eni_id = node['ec2']['network_interfaces_macs'][mac]['interface_id']
+    eni_id = open("http://169.254.169.254/latest/meta-data/network/interfaces/macs/#{mac}/interface-id", { proxy: false }, &:gets)
     Chef::Log.debug("#{interface} eni id is #{eni_id}")
     eni_id
   end
