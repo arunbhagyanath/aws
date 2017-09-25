@@ -434,14 +434,12 @@ end
 
 ### aws_elastic_lb
 
-`elastic_lb` handles registering and removing nodes from ELBs. The resource also adds basic support for creating and deleting ELBs. Note that currently this resource is not fully idempotent so it will not update the existing configuration of an ELB.
+Adds or removes nodes to an Elastic Load Balancer
 
 #### Actions:
 
-- `register` - Add a node to the ELB
-- `deregister` - Remove a node from the ELB
-- `create` - Create a new ELB
-- `delete` - Delete an existing ELB
+- `register` - Add this instance to the LB
+- `deregister` - Remove this instance from the LB
 
 #### Properties:
 
@@ -472,15 +470,6 @@ aws_elastic_lb 'Setup the ELB' do
       protocol: 'HTTP',
     },
   ]
-end
-```
-
-To register the node in the 'QA' ELB:
-
-```ruby
-aws_elastic_lb 'elb_qa' do
-  name 'QA'
-  action :register
 end
 ```
 
@@ -529,6 +518,28 @@ The `elastic_ip` resource provider does not support allocating new IPs. This mus
 aws_elastic_ip 'eip_load_balancer_production' do
   ip '36.1.35.30'
   action :associate
+end
+```
+
+### aws_elastic_lb
+
+`elastic_lb` handles registering and removing nodes from ELBs. The resource also adds basic support for creating and deleting ELBs. Note that currently this resource is not fully idempotent so it will not update the existing configuration of an ELB.
+
+#### Properties:
+
+- `register` - Add a node to the ELB
+- `deregister` - Remove a node from the ELB
+- `create` - Create a new ELB
+- `delete` - Delete an existing ELB
+
+#### Examples:
+
+To register the node in the 'QA' ELB:
+
+```ruby
+aws_elastic_lb 'elb_qa' do
+  name 'QA'
+  action :register
 end
 ```
 
