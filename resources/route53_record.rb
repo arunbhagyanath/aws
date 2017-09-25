@@ -72,9 +72,11 @@ end
 action_class do
   include AwsCookbook::Ec2
 
-  # convert the passed name to the trailing period format
   def name
-    @name ||= new_resource.name[-1] == '.' ? new_resource.name : "#{new_resource.name}."
+    @name ||= begin
+      return new_resource.name + '.' if new_resource.name !~ /\.$/
+      new_resource.name
+    end
   end
 
   def value
